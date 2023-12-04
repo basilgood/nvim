@@ -1,7 +1,5 @@
 -- init
 vim.loader.enable()
-vim.opt.runtimepath = vim.env.VIMRUNTIME
-vim.opt.packpath = '~/.config/nvim,~/.local/share/nvim/site'
 
 local vimRc = vim.api.nvim_create_augroup('vimRc', { clear = true })
 local autocmd = vim.api.nvim_create_autocmd
@@ -18,8 +16,8 @@ require('paq')({
   { 'nvim-lua/plenary.nvim', opt = true },
   'basilgood/nvim-sensible',
   'nvim-tree/nvim-web-devicons',
-  'prichrd/netrw.nvim',
-  'ibhagwan/fzf-lua',
+  'stevearc/oil.nvim',
+  { 'ibhagwan/fzf-lua', opt = true },
   'neovim/nvim-lspconfig',
   'hrsh7th/nvim-cmp',
   'hrsh7th/cmp-nvim-lsp',
@@ -28,14 +26,13 @@ require('paq')({
   'FelipeLema/cmp-async-path',
   'dcampos/nvim-snippy',
   'dcampos/cmp-snippy',
-  'honza/vim-snippets',
-  'onsails/lspkind.nvim',
+  { 'onsails/lspkind.nvim', opt = true },
   'seblj/nvim-echo-diagnostics',
-  'pmizio/typescript-tools.nvim',
   'nvim-treesitter/nvim-treesitter',
+  'yioneko/nvim-yati',
   'HiPhish/rainbow-delimiters.nvim',
-  'stevearc/conform.nvim',
-  'mfussenegger/nvim-lint',
+  { 'stevearc/conform.nvim', opt = true },
+  { 'mfussenegger/nvim-lint', opt = true },
   'numToStr/Comment.nvim',
   'JoosepAlviste/nvim-ts-context-commentstring',
   'nvimdev/lspsaga.nvim',
@@ -58,28 +55,22 @@ require('paq')({
   'Selyss/mind.nvim',
   'folke/persistence.nvim',
   'nvim-lualine/lualine.nvim',
-  'EdenEast/nightfox.nvim',
+  { 'EdenEast/nightfox.nvim', opt = true },
 })
 
 vim.cmd.packadd('plenary.nvim')
 
--- sensible/netrw
+-- sensible/oil
 require('sensible').setup({})
-require('netrw').setup({
-  mappings = {
-    ['.'] = function()
-      vim.cmd(':norm mfmx<cr>')
-    end,
+require('oil').setup({
+  view_options = {
+    show_hidden = true,
   },
 })
-map('n', '-', function()
-  local file = vim.fn.expand('%:t')
-  vim.fn.execute('Explore')
-  vim.fn.expand('%:h')
-  vim.fn.search(file, 'wc')
-end)
+map('n', '-', '<cmd>Oil<cr>')
 
 -- fzf
+vim.cmd.packadd('fzf-lua')
 require('fzf-lua').setup({ winopts = { width = 0.7, preview = { layout = 'vertical', vertical = 'up:60%' } } })
 map(
   'n',
@@ -98,11 +89,7 @@ vim.diagnostic.config({
   underline = false,
   float = {
     focusable = false,
-    suffix = '',
-    header = { '  Diagnostics', 'String' },
-    prefix = function(_, _, _)
-      return '  ', 'String'
-    end,
+    border = 'rounded',
   },
 })
 
@@ -112,6 +99,7 @@ for type, icon in pairs(signs) do
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
 
+-- nvim-echo-diagnostics
 autocmd('CursorHold', {
   pattern = '*',
   group = vimRc,
@@ -131,11 +119,79 @@ local opts = {
   },
   capabilities = capabilities,
 }
-lspconfig.lua_ls.setup({ opts })
-lspconfig.nil_ls.setup({ opts })
-lspconfig.rust_analyzer.setup({ opts })
 
-require('lspsaga').setup({ lightbulb = { enable = false } })
+local function organize_imports()
+  local params = {
+    command = '_typescript.organizeImports',
+    arguments = { vim.api.nvim_buf_get_name(0) },
+    title = '',
+  }
+  vim.lsp.buf.execute_command(params)
+end
+
+lspconfig.tsserver.setup({
+  opts,
+  commands = {
+    OI = {
+      organize_imports,
+    },
+  },
+})
+lspconfig.nil_ls.setup({ opts })
+lspconfig.lua_ls.setup({
+  opts,
+  settings = {
+    Lua = {
+      diagnostics = {
+        enable = true,
+        globals = { 'vim' },
+        disable = {
+          'missing-fields',
+          'no-unknown',
+        },
+      },
+      workspace = {
+        library = {
+          vim.env.VIMRUNTIME,
+        },
+        checkThirdParty = false,
+      },
+    },
+  },
+})
+lspconfig.rust_analyzer.setup({
+  opts,
+  settings = {
+    ['rust-analyzer'] = {
+      imports = {
+        granularity = {
+          group = 'module',
+        },
+        prefix = 'self',
+      },
+      cargo = {
+        buildScripts = {
+          enable = true,
+        },
+      },
+      procMacro = {
+        enable = true,
+      },
+    },
+  },
+})
+
+require('lspsaga').setup({
+  lightbulb = { virtual_text = false, sign = false },
+  definition = {
+    keys = {
+      edit = '<cr>',
+      vsplit = '<c-v>',
+      split = '<c-s>',
+      tabe = '<c-t>',
+    },
+  },
+})
 map('n', '<leader>d', '<cmd>TroubleToggle document_diagnostics<cr>')
 map('n', '[d', vim.diagnostic.goto_prev)
 map('n', ']d', vim.diagnostic.goto_next)
@@ -147,20 +203,23 @@ map('n', 'gr', '<cmd>Trouble lsp_references<cr>')
 map('n', 'K', '<cmd>Lspsaga hover_doc<cr>')
 map('n', '<c-k>', vim.lsp.buf.signature_help)
 
--- typescript-tools
-require('typescript-tools').setup({})
-
 -- fidget
-require('fidget').setup({})
+require('fidget').setup({
+  progress = { ignore_empty_message = false },
+})
 
 -- cmp
+vim.cmd.packadd('lspkind.nvim')
 local cmp = require('cmp')
 local lspkind = require('lspkind')
 local select_opts = { behavior = cmp.SelectBehavior.Select }
 local replace_opts = { behavior = cmp.ConfirmBehavior.Replace, select = false }
 
 cmp.setup({
-  preselect = cmp.PreselectMode.None,
+  completion = {
+    completeopt = 'menu,menuone',
+  },
+  preselect = cmp.PreselectMode.Item,
   snippet = {
     expand = function(args)
       require('snippy').expand_snippet(args.body)
@@ -241,16 +300,25 @@ require('nvim-treesitter.configs').setup({
     enable = true,
     additional_vim_regex_highlighting = false,
   },
-  indent = { enable = true, disable = { 'javascript', 'typescript', 'html' } },
+  yati = {
+    enable = true,
+    default_fallback = 'auto',
+    suppress_conflict_warning = true,
+  },
+  indent = {
+    enable = true,
+    disable = { 'javascript', 'typescript', 'html', 'rust', 'lua', 'css', 'tsx', 'json', 'toml' },
+  },
 })
 
 -- ts-context-commentstring
 vim.g.skip_ts_context_commentstring_module = true
-require('ts_context_commentstring').setup {
+require('ts_context_commentstring').setup({
   enable_autocmd = false,
-}
+})
 
 -- linter
+vim.cmd.packadd('nvim-lint')
 require('lint').linters_by_ft = {
   lua = { 'luacheck' },
   nix = { 'statix' },
@@ -265,6 +333,7 @@ vim.api.nvim_create_autocmd({ 'BufWritePost', 'InsertLeave', 'TextChanged' }, {
 })
 
 --formatter
+vim.cmd.packadd('conform.nvim')
 require('conform').setup({
   formatters_by_ft = {
     lua = { 'stylua' },
@@ -286,21 +355,12 @@ end)
 -- misc
 require('nvim-surround').setup()
 require('Comment').setup({ ignore = '^$' })
-require('nvim-autopairs').setup({})
+require('nvim-autopairs').setup({
+  disable_filetype = { 'TelescopePrompt', 'vim', 'markdown' },
+})
 require('hlsearch').setup()
 require('range-highlight').setup({})
 require('mind').setup()
-
--- dressing
-require('dressing').setup({
-  input = {
-    override = function(conf)
-      conf.col = -1
-      conf.row = 0
-      return conf
-    end,
-  },
-})
 
 -- git
 if vim.fn.executable('nvr') == 1 then
@@ -339,6 +399,7 @@ require('lualine').setup({
     },
     lualine_b = { { 'branch', icon = '' } },
     lualine_c = {
+      '%=',
       { 'filename', file_status = false, path = 0 },
       {
         function()
@@ -352,19 +413,8 @@ require('lualine').setup({
         color = { fg = '#ca1243' },
       },
     },
-    lualine_x = {
-      function()
-        local clients = vim.tbl_values(vim.tbl_map(function(x)
-          return x.name
-        end, vim.lsp.buf_get_clients()))
-        if #clients == 0 then
-          return ''
-        end
-        return '󰅭 ' .. table.concat(vim.fn.uniq(vim.fn.sort(clients)), ' ')
-      end,
-      '%=',
-    },
-    lualine_y = { 'diagnostics', 'filetype' },
+    lualine_x = { 'diagnostics' },
+    lualine_y = { 'filetype' },
     lualine_z = { '%2c:%l/%L' },
   },
 })
@@ -437,4 +487,5 @@ vim.filetype.add({
   },
 })
 
+vim.cmd.packadd('nightfox.nvim')
 vim.cmd.colorscheme('nightfox')
