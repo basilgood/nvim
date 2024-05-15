@@ -5,23 +5,26 @@ return {
   },
   config = function()
     local lspconfig = require('lspconfig')
+    local keymap = vim.keymap
     local capabilities = require('cmp_nvim_lsp').default_capabilities({
       workspace = {
         didChangeWatchedFiles = { dynamicRegistration = false },
       },
     })
 
-    local opts = {
-      flags = {
-        debounce_text_changes = 150,
-      },
-      capabilities = capabilities,
-    }
+    vim.lsp.handlers['textDocument/signatureHelp'] =
+      vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'single' })
 
-    lspconfig.eslint.setup({})
-    lspconfig.nil_ls.setup({ opts })
+    lspconfig.eslint.setup({
+      capabilities = capabilities,
+    })
+
+    lspconfig.nil_ls.setup({
+      capabilities = capabilities,
+    })
+
     lspconfig.lua_ls.setup({
-      opts,
+      capabilities = capabilities,
       settings = {
         Lua = {
           diagnostics = {
@@ -41,8 +44,9 @@ return {
         },
       },
     })
+
     lspconfig.rust_analyzer.setup({
-      opts,
+      capabilities = capabilities,
       settings = {
         ['rust-analyzer'] = {
           imports = {

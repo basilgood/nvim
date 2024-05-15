@@ -27,8 +27,13 @@ return {
   },
 
   {
-    'echasnovski/mini.indentscope',
-    opts = { draw = { delay = 2000 }, symbol = '│' },
+    'smjonas/inc-rename.nvim',
+    config = function()
+      require('inc_rename').setup({ input_buffer_type = 'dressing', save_in_cmdline_history = false })
+      vim.keymap.set('n', '<f2>', function()
+        return ':IncRename ' .. vim.fn.expand('<cword>')
+      end, { expr = true })
+    end,
   },
 
   {
@@ -55,7 +60,46 @@ return {
     dependencies = 'nvim-treesitter/nvim-treesitter',
   },
 
-  'stevearc/dressing.nvim',
+  {
+    'otavioschwanck/arrow.nvim',
+    event = 'VeryLazy',
+    opts = {
+      show_icons = true,
+      leader_key = 'm',
+    },
+  },
+
+  {
+    'NStefan002/screenkey.nvim',
+    cmd = 'Screenkey',
+    config = true,
+  },
+
+  {
+    'Lenovsky/nuake',
+    keys = {
+      { '<f3>', '<cmd>Nuake<cr>' },
+      { '<f3>', '<C-\\><C-n><cmd>Nuake<cr>', mode = { 'i', 't' } },
+      { '<esc>', '<C-\\><C-n>', mode = { 't' } },
+    },
+  },
+
+  {
+    'smjonas/live-command.nvim',
+    config = function()
+      require('live-command').setup({
+        commands = {
+          Norm = { cmd = 'norm' },
+        },
+      })
+    end,
+  },
+
+  {
+    'stevearc/dressing.nvim',
+    opts = {},
+  },
+  'mg979/vim-visual-multi',
   'kkoomen/gfi.vim',
   'LunarVim/bigfile.nvim',
 }

@@ -5,15 +5,16 @@ return {
 
     require('lint').linters_by_ft = {
       lua = { 'luacheck' },
-      nix = { 'statix' },
       javascript = { 'eslint' },
       typescript = { 'eslint' },
       yaml = { 'yamllint' },
       json = { 'jsonlint' },
     }
 
-    autocmd({ 'BufWritePost', 'InsertLeave', 'TextChanged' }, {
-      command = 'silent! lua require("lint").try_lint()',
+    autocmd({ 'BufWritePost', 'BufReadPost', 'InsertLeave', 'TextChanged' }, {
+      callback = function()
+        require('lint').try_lint()
+      end,
     })
   end,
 }

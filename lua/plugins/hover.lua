@@ -9,12 +9,7 @@ return {
         end,
       })
       vim.keymap.set('n', 'K', require('hover').hover, { desc = 'hover.nvim' })
+      vim.keymap.set('i', '<c-k>', vim.lsp.buf.signature_help, { desc = 'show signature' })
     end,
-  },
-  {
-    'weilbith/nvim-code-action-menu',
-    keys = {
-      { '<f4>', '<cmd>CodeActionMenu<cr>' },
-    },
   },
 }

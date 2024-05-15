@@ -14,6 +14,7 @@ return {
         'csv',
         'diff',
         'gitcommit',
+        'git_rebase',
         'go',
         'javascript',
         'jsdoc',
@@ -28,6 +29,7 @@ return {
         'regex',
         'rust',
         'scss',
+        'styled',
         'toml',
         'tsx',
         'typescript',
@@ -57,5 +59,7 @@ return {
         },
       },
     })
+    local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
+    parser_config.typescript.filetype_to_parsername = { 'javascript', 'typescript' }
   end,
 }

@@ -26,13 +26,13 @@ return {
       window = {
         completion = {
           border = 'single',
-          winhighlight = 'Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:Visual,Search:None',
+          winhighlight = 'Normal:NormalFloat,CursorLine:Visual,Search:None',
           col_offset = 0,
           side_padding = 0,
         },
         documentation = {
           border = 'single',
-          winhighlight = 'Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:Visual,Search:None',
+          winhighlight = 'Normal:NormalFloat,CursorLine:Visual,Search:None',
         },
       },
       mapping = {
@@ -67,7 +67,6 @@ return {
         { name = 'nvim_lsp_signature_help' },
       },
       formatting = {
-        fields = { 'abbr', 'kind', 'menu' },
         format = function(_, item)
           item.kind = lspkind.presets.codicons[item.kind] .. ' ' .. item.kind
           item.abbr = item.abbr:match('[^(]+')

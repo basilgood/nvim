@@ -28,7 +28,7 @@ set.wildmode = 'longest:full,full'
 set.diffopt = 'internal,filler,closeoff,context:3,indent-heuristic,algorithm:patience,linematch:60'
 set.sessionoptions = 'buffers,curdir,tabpages,folds,winpos,winsize'
 set.list = true
-set.listchars = { lead = '⋅', trail = '⋅', tab = '┊ ·', nbsp = '␣' }
+set.listchars = { lead = '⋅', trail = '⋅', tab = '▏ ', nbsp = '␣', precedes = '◀', extends = '▶' }
 set.shortmess:append({
   I = true,
   w = true,

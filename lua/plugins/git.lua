@@ -1,16 +1,24 @@
 return {
   'lewis6991/gitsigns.nvim',
   dependencies = {
+    'sindrets/diffview.nvim',
     'tpope/vim-fugitive',
-    { 'akinsho/git-conflict.nvim', opts = {} },
+    {
+      'NeogitOrg/neogit',
+      branch = 'nightly',
+      dependencies = {
+        'nvim-lua/plenary.nvim',
+      },
+      opts = {},
+    },
   },
   config = function()
     if vim.fn.executable('nvr') == 1 then
       vim.env.GIT_EDITOR = "nvr --remote-tab-wait +'set bufhidden=delete'"
     end
-
-    local gs = require('gitsigns')
+    vim.g.committia_open_only_vim_starting = 0
     local map = vim.keymap.set
+    local gs = require('gitsigns')
     gs.setup({
       signs = { untracked = { text = '' } },
       _signs_staged_enable = true,
@@ -36,5 +44,6 @@ return {
         map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
       end,
     })
+    map('n', 'ghg', '<cmd>tab G<cr>')
   end,
 }
