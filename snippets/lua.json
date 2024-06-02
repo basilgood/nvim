@@ -1,0 +1,12 @@
+{
+  "ppr": {
+    "prefix": "ppr",
+    "body": "print($1)",
+    "description": "print"
+  },
+  "req": {
+    "prefix": "req",
+    "body": "require('$1').setup({$2})",
+    "description": "print"
+  }
+}
