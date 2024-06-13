@@ -24,7 +24,6 @@ local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 
 -- Config
 local map = vim.keymap.set
-local o = vim.opt
 local vimRc = vim.api.nvim_create_augroup('vimRc', { clear = true })
 local autocmd = vim.api.nvim_create_autocmd
 
@@ -37,9 +36,19 @@ end)
 -- colorscheme
 now(function()
   vim.o.termguicolors = true
-  add('lewis6991/github_dark.nvim')
   add('rmehri01/onenord.nvim')
-  vim.cmd.colorscheme('onenord')
+  add('AlexvZyl/nordic.nvim')
+  require('nordic').setup({
+    -- override = {
+    --   Normal = {
+    --     bg = '#2e3440',
+    --   },
+    -- String = {
+    --   fg = '#829f69',
+    -- },
+    -- },
+  })
+  vim.cmd.colorscheme('nordic')
 end)
 
 -- statusline
@@ -174,13 +183,13 @@ later(function()
     window = {
       completion = {
         border = 'single',
-        winhighlight = 'FloatBorder:Whitespace',
+        winhighlight = 'Normal:Normal,FloatBorder:FloatBorder,Search:None',
         col_offset = 0,
         side_padding = 0,
       },
       documentation = {
         border = 'single',
-        winhighlight = 'FloatBorder:Whitespace',
+        winhighlight = 'Normal:Normal,FloatBorder:FloatBorder,Search:None',
       },
     },
     preselect = cmp.PreselectMode.None,
@@ -423,7 +432,7 @@ later(function()
     depends = {
       'sindrets/diffview.nvim',
       'tpope/vim-fugitive',
-      -- 'sankhesh/gitv',
+      'sankhesh/gitv',
     },
   })
   if vim.fn.executable('nvr') == 1 then
@@ -456,152 +465,62 @@ later(function()
     end,
   })
   map('n', 'ghg', '<cmd>tab G<cr>')
+  autocmd('FileType', {
+    pattern = { 'fugitive', 'git' },
+    group = vimRc,
+    callback = function(args)
+      map('n', 'ghl', '<cmd>tab G log<cr>', { buffer = args.buf })
+      map('n', 'gha', '<cmd>tab G log --oneline --graph --decorate --all<cr>', { buffer = args.buf })
+      map('n', 'ghs', '<cmd>tab G<cr>', { buffer = args.buf })
+      map('n', 'ghb', '<cmd>tab G branch -va<cr>', { buffer = args.buf })
+      map('n', 'ghd', ':G branch -D ', { buffer = args.buf })
+      map('n', 'ghf', '<cmd>G fetch --all --prune<cr>', { buffer = args.buf })
+    end,
+  })
+  map('n', 'ghl', '<cmd>tab G log<cr>')
 end)
 
--- telescope
+-- fzf-lua
 later(function()
-  add({
-    source = 'nvim-telescope/telescope.nvim',
-    depends = {
-      'nvim-telescope/telescope-file-browser.nvim',
-      'nvim-telescope/telescope-ui-select.nvim',
-      'nvim-telescope/telescope-live-grep-args.nvim',
-      'echasnovski/mini.fuzzy',
-    },
-  })
-  local telescope = require('telescope')
-  local actions = require('telescope.actions')
-  local lga_actions = require('telescope-live-grep-args.actions')
-  local live_grep_args_shortcuts = require('telescope-live-grep-args.shortcuts')
-  require('mini.fuzzy').setup()
-
-  local function filenameFirst(_, path)
-    local tail = vim.fs.basename(path)
-    local parent = vim.fs.dirname(path)
-    if parent == '.' then
-      return tail
-    end
-    return string.format('%s\t\t%s', tail, parent)
-  end
-
-  telescope.setup({
-    defaults = {
-      path_display = { 'smart' },
-      selection_strategy = 'reset',
-      scroll_strategy = 'limit',
-      dynamic_preview_title = true,
-      selection_caret = '➤ ',
-      prompt_prefix = '➤ ',
-      mappings = {
-        i = {
-          ['<Esc>'] = actions.close,
-          ['<C-q>'] = actions.smart_send_to_qflist + actions.open_qflist,
-          ['<C-s>'] = actions.select_horizontal,
-          ['<C-v>'] = actions.select_vertical,
-          ['<C-Down>'] = actions.cycle_history_next,
-          ['<C-Up>'] = actions.cycle_history_prev,
-        },
+  add('ibhagwan/fzf-lua')
+  local opts = {
+    'telescope',
+    winopts = {
+      width = 0.55,
+      height = 0.7,
+      preview = {
+        layout = 'vertical',
+        vertical = 'up:60%',
       },
     },
-    pickers = {
-      live_grep = {
-        theme = 'dropdown',
-      },
-      grep_string = {
-        theme = 'dropdown',
-      },
-      find_files = {
-        find_command = {
-          'fd',
-          '-tf',
-          '-tl',
-          '-H',
-          '-E=node_modules',
-          '-E=.git',
-          '--strip-cwd-prefix',
-        },
-        theme = 'dropdown',
-        previewer = true,
-        path_display = filenameFirst,
-      },
-      buffers = {
-        theme = 'dropdown',
-        previewer = true,
-        initial_mode = 'normal',
-        mappings = {
-          i = {
-            ['<c-x>'] = actions.delete_buffer,
-          },
-          n = {
-            ['dd'] = actions.delete_buffer,
-          },
-        },
-      },
-      oldfiles = {
-        theme = 'dropdown',
-        path_display = filenameFirst,
-      },
-      help_tags = {
-        theme = 'dropdown',
-      },
-      colorscheme = {
-        enable_preview = true,
-      },
-      lsp_references = {
-        theme = 'dropdown',
-        initial_mode = 'normal',
-      },
-      lsp_definitions = {
-        theme = 'dropdown',
-        initial_mode = 'normal',
-      },
-      lsp_declarations = {
-        theme = 'dropdown',
-        initial_mode = 'normal',
-      },
-      lsp_implementations = {
-        theme = 'dropdown',
-        initial_mode = 'normal',
-      },
-      diagnostics = {
-        theme = 'dropdown',
-        initial_mode = 'normal',
-      },
-    },
-    extensions = {
-      ['ui-select'] = {
-        require('telescope.themes').get_dropdown(),
-      },
-      live_grep_args = {
-        auto_quoting = false,
-        theme = 'dropdown',
-        mappings = { -- extend mappings
-          i = {
-            ['<C-k>'] = lga_actions.quote_prompt(),
-            ['<C-g>'] = lga_actions.quote_prompt({ postfix = ' -g ' }),
-          },
-        },
-      },
-    },
-  })
-  telescope.load_extension('ui-select')
-  telescope.load_extension('live_grep_args')
-  local opts = { noremap = true, silent = true }
-  map('n', '<c-p>', '<cmd>Telescope find_files<cr>')
-  map('n', '<bs>', '<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>')
-  map('n', '<leader>g', "<cmd>lua require('telescope').extensions.live_grep_args.live_grep_args()<cr>")
-  map('n', '<leader>w', live_grep_args_shortcuts.grep_word_under_cursor)
-  map('x', '<leader>w', live_grep_args_shortcuts.grep_visual_selection)
-  map('n', '<leader>o', '<cmd>Telescope oldfiles<cr>')
-  map('n', '<leader>h', '<cmd>Telescope help_tags<cr>')
-  map('n', 'z=', "<cmd>lua require'telescope.builtin'.spell_suggest{}<cr>")
-
-  map('n', 'gr', '<cmd>Telescope lsp_references<CR>', opts)
-  map('n', 'gD', vim.lsp.buf.declaration, opts)
-  map('n', 'gd', '<cmd>Telescope lsp_definitions<CR>', opts)
-  map('n', 'gy', '<cmd>Telescope lsp_implementations<CR>', opts)
-  map('n', 'gT', '<cmd>Telescope lsp_type_definitions<CR>', opts)
-  map('n', '<leader>d', '<cmd>Telescope diagnostics bufnr=0<CR>', opts)
+  }
+  require('fzf-lua').setup(opts)
+  require('fzf-lua').register_ui_select()
+  map(
+    'n',
+    '<c-p>',
+    '<cmd>lua require("fzf-lua").files({ cmd = "fd -tf -tl -H -E=.git -E=node_modules --strip-cwd-prefix" })<cr>'
+  )
+  map('n', '<bs>', '<cmd>FzfLua buffers<cr>')
+  map('n', '<leader>g', '<cmd>FzfLua live_grep_glob<cr>')
+  map('n', '<leader>w', '<cmd>FzfLua grep_cword<cr>')
+  map('x', '<leader>w', '<cmd>FzfLua grep_visual<cr>')
+  map('n', '<leader>o', '<cmd>FzfLua oldfiles<cr>')
+  map('n', '<leader>h', '<cmd>FzfLua help_tags<cr>')
+  map('n', '<leader>r', '<cmd>FzfLua resume<cr>')
+  map('n', 'z=', function()
+    require('fzf-lua').spell_suggest({
+      winopts = { relative = 'cursor', row = 1.01, col = 0, height = 0.2, width = 0.5 },
+    })
+  end)
+  map('n', 'gd', function()
+    require('fzf-lua').lsp_definitions({ jump_to_single_result = true })
+  end)
+  map('n', 'gD', '<cmd>FzfLua lsp_definitions<cr>')
+  map('n', 'gr', '<cmd>FzfLua lsp_references<cr>')
+  map('n', 'gy', '<cmd>FzfLua lsp_implementations<cr>')
+  map('n', '<f4>', '<cmd>FzfLua lsp_code_actions<cr>')
+  map('n', '<leader>d', '<cmd>FzfLua diagnostics_document<cr>')
 end)
 
 -- sessions
@@ -704,7 +623,7 @@ now(function()
       'scratch',
     },
     callback = function(args)
-      vim.keymap.set('n', 'q', '<cmd>quit<cr>', { buffer = args.buf })
+      map('n', 'q', '<cmd>quit<cr>', { buffer = args.buf })
     end,
   })
   autocmd('FileType', { pattern = { 'qf', 'help', 'man' }, group = vimRc, command = 'wincmd J' })
