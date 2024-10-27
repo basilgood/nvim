@@ -31,67 +31,181 @@ local autocmd = vim.api.nvim_create_autocmd
 now(function()
   add('basilgood/nvim-sensible')
   require('sensible').setup({})
+  package.preload['nvim-web-devicons'] = function()
+    require('mini.icons').mock_nvim_web_devicons()
+    return package.loaded['nvim-web-devicons']
+  end
+end)
+
+-- netrw
+later(function()
+  map('n', '-', function()
+    local file = vim.fn.expand('%:t')
+    vim.cmd('Explore')
+    vim.fn.search('^' .. file .. '$', 'wc')
+  end)
+
+  autocmd('filetype', {
+    pattern = 'netrw',
+    callback = function()
+      local opts = { buffer = true, remap = true }
+      map('n', '<tab>', 'mf', opts)
+      map('n', '<esc>', 'mF', opts)
+      map('n', '.', 'mfmx', opts)
+      map('n', 'P', '<cmd>wincmd w|bd|wincmd c<cr>', opts)
+    end,
+  })
 end)
 
 -- colorscheme
 now(function()
-  vim.o.termguicolors = true
-  add('rmehri01/onenord.nvim')
-  add('AlexvZyl/nordic.nvim')
-  require('nordic').setup({
-    -- override = {
-    --   Normal = {
-    --     bg = '#2e3440',
-    --   },
-    -- String = {
-    --   fg = '#829f69',
-    -- },
-    -- },
+  add('aliqyan-21/darkvoid.nvim')
+  add('catppuccin/nvim')
+  require('catppuccin').setup({
+    flavour = 'macchiato',
+    no_italic = true,
+    styles = {
+      comments = {},
+      conditionals = {},
+    },
+    custom_highlights = function()
+      return {
+        FzfLuaBorder = {
+          bg = '#191c2d',
+          fg = '#787878',
+        },
+      }
+    end,
   })
-  vim.cmd.colorscheme('nordic')
+  require('catppuccin').load()
 end)
 
 -- statusline
 now(function()
-  add({
-    source = 'ojroques/nvim-hardline',
-    dependens = { 'nvim-tree/nvim-web-devicons' },
-  })
-  require('hardline').setup({
-    theme = 'default',
-    sections = {
-      { class = 'mode', item = require('hardline.parts.mode').get_item, hide = 120 },
-      { class = 'high', item = require('hardline.parts.git').get_item, hide = 120 },
-      { class = 'med', item = require('hardline.parts.filename').get_item },
-      '%<',
-      { class = 'med', item = '%=' },
-      { class = 'error', item = require('hardline.parts.lsp').get_error, hide = 120 },
-      { class = 'warning', item = require('hardline.parts.lsp').get_warning, hide = 120 },
-      { class = 'high', item = require('hardline.parts.filetype').get_item, hide = 60 },
-      { class = 'mode', item = require('hardline.parts.line').get_item, hide = 120 },
+  require('mini.statusline').setup({
+    content = {
+      active = function()
+        local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
+        local git = MiniStatusline.section_git({ trunc_width = 120 })
+        local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = 75 })
+        local lsp = MiniStatusline.section_lsp({ trunc_width = 75 })
+        local filename = MiniStatusline.section_filename({ trunc_width = 140 })
+        local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+        local location = MiniStatusline.section_location({ trunc_width = 75 })
+
+        return MiniStatusline.combine_groups({
+          { hl = mode_hl, strings = { mode } },
+          { hl = 'MiniStatuslineDevinfo', strings = { git, diagnostics, lsp } },
+          '%<',
+          { hl = 'MiniStatuslineFilename', strings = { filename } },
+          '%=',
+          { hl = 'MiniStatuslineFileinfo', strings = { fileinfo } },
+          { hl = mode_hl, strings = { location } },
+        })
+      end,
     },
+    set_vim_settings = false,
+  })
+end)
+
+-- mappings
+now(function()
+  map('n', ']q', ':cnext<cr>')
+  map('n', '[q', ':cprev<cr>')
+  map('n', '<C-w>z', [[:wincmd z<bar>cclose<bar>lclose<cr>]], { silent = true })
+  map('x', 'il', 'g_o^', { silent = true })
+  map('o', 'il', ':normal vil<cr>', { silent = true })
+end)
+
+-- autocmds
+now(function()
+  autocmd('TextYankPost', {
+    group = vimRc,
+    callback = function()
+      vim.highlight.on_yank()
+    end,
+  })
+  autocmd('FileType', {
+    group = vimRc,
+    pattern = {
+      'help',
+      'man',
+      'qf',
+      'query',
+      'scratch',
+      'spectre_panel',
+    },
+    callback = function(args)
+      map('n', 'q', '<cmd>quit<cr>', { buffer = args.buf })
+    end,
+  })
+  autocmd('FileType', { pattern = { 'qf', 'help', 'man' }, group = vimRc, command = 'wincmd J' })
+  autocmd('FileType', { group = vimRc, pattern = '*', command = 'set formatoptions-=o' })
+  autocmd('BufRead', { pattern = '*', group = vimRc, command = [[call setpos(".", getpos("'\""))]] })
+  autocmd('BufReadPre', {
+    pattern = '*.json',
+    group = vimRc,
+    command = 'setlocal conceallevel=0 concealcursor= formatoptions=',
+  })
+  autocmd('BufReadPre', {
+    pattern = '*{.md,.markdown}',
+    group = vimRc,
+    command = 'setlocal conceallevel=2 concealcursor=vc',
+  })
+  autocmd({ 'FocusGained', 'TermClose', 'TermLeave' }, {
+    command = 'checktime',
   })
 end)
 
 -- tabline
 later(function()
+  package.preload['nvim-web-devicons'] = function()
+    require('mini.icons').mock_nvim_web_devicons()
+    return package.loaded['nvim-web-devicons']
+  end
   add('alvarosevilla95/luatab.nvim')
   require('luatab').setup({})
 end)
 
--- oil
+-- fzf-lua
 later(function()
-  add({
-    source = 'stevearc/oil.nvim',
-    dependens = { 'nvim-tree/nvim-web-devicons' },
-  })
-  require('oil').setup({
-    skip_confirm_for_simple_edits = true,
-    view_options = {
-      show_hidden = true,
+  add('ibhagwan/fzf-lua')
+  local opts = {
+    winopts = {
+      width = 0.55,
+      height = 0.7,
+      preview = {
+        layout = 'vertical',
+        vertical = 'up:60%',
+      },
     },
-  })
-  map('n', '-', '<cmd>Oil<cr>')
+  }
+  require('fzf-lua').setup(opts)
+  require('fzf-lua').register_ui_select()
+  map(
+    'n',
+    '<c-p>',
+    '<cmd>lua require("fzf-lua").files({ cmd = "fd -tf -tl -H -E=.git -E=node_modules --strip-cwd-prefix" })<cr>'
+  )
+  map('n', '<bs>', '<cmd>FzfLua buffers<cr>')
+  map('n', '<leader>g', '<cmd>FzfLua live_grep_glob<cr>')
+  map('n', '<leader>w', '<cmd>FzfLua grep_cword<cr>')
+  map('x', '<leader>w', '<cmd>FzfLua grep_visual<cr>')
+  map('n', '<leader>o', '<cmd>FzfLua oldfiles<cr>')
+  map('n', '<leader>h', '<cmd>FzfLua help_tags<cr>')
+  map('n', '<leader>r', '<cmd>FzfLua resume<cr>')
+  map('n', 'z=', function()
+    require('fzf-lua').spell_suggest({
+      winopts = { relative = 'cursor', row = 1.01, col = 0, height = 0.2, width = 0.5 },
+    })
+  end)
+  map('n', 'gd', function()
+    require('fzf-lua').lsp_definitions({ jump_to_single_result = true })
+  end)
+  map('n', 'gD', '<cmd>FzfLua lsp_definitions<cr>')
+  map('n', 'gr', '<cmd>FzfLua lsp_references<cr>')
+  map('n', 'gy', '<cmd>FzfLua lsp_implementations<cr>')
+  map('n', '<leader>d', '<cmd>FzfLua diagnostics_document<cr>')
 end)
 
 -- treesitter
@@ -164,32 +278,38 @@ later(function()
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-buffer',
       'FelipeLema/cmp-async-path',
-      'garymjr/nvim-snippets',
       'hrsh7th/cmp-nvim-lsp-signature-help',
       'onsails/lspkind.nvim',
+      'dcampos/cmp-snippy',
+      'dcampos/nvim-snippy',
     },
   })
   local cmp = require('cmp')
-  require('snippets').setup()
+  local snippy = require('snippy')
   local lspkind = require('lspkind')
+  local has_words_before = function()
+    unpack = unpack or table.unpack
+    local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+    return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
+  end
   local select_opts = { behavior = cmp.SelectBehavior.Select }
   local replace_opts = { behavior = cmp.ConfirmBehavior.Replace, select = false }
   cmp.setup({
     snippet = {
       expand = function(args)
-        vim.snippet.expand(args.body)
+        snippy.expand_snippet(args.body)
       end,
     },
     window = {
       completion = {
         border = 'single',
-        winhighlight = 'Normal:Normal,FloatBorder:FloatBorder,Search:None',
+        winhighlight = 'Normal:Normal,FloatBorder:FzfLuaBorder,Search:None',
         col_offset = 0,
         side_padding = 0,
       },
       documentation = {
         border = 'single',
-        winhighlight = 'Normal:Normal,FloatBorder:FloatBorder,Search:None',
+        winhighlight = 'Normal:Normal,FloatBorder:FzfLuaBorder,Search:None',
       },
     },
     preselect = cmp.PreselectMode.None,
@@ -201,28 +321,27 @@ later(function()
       ['<Tab>'] = cmp.mapping(function(fallback)
         if cmp.visible() then
           cmp.select_next_item()
-        elseif vim.snippet.active({ direction = 1 }) then
-          vim.schedule(function()
-            vim.snippet.jump(1)
-          end)
+        elseif snippy.can_expand_or_advance() then
+          snippy.expand_or_advance()
+        elseif has_words_before() then
+          cmp.complete()
         else
           fallback()
         end
       end, { 'i', 's' }),
+
       ['<S-Tab>'] = cmp.mapping(function(fallback)
         if cmp.visible() then
           cmp.select_prev_item()
-        elseif vim.snippet.active({ direction = -1 }) then
-          vim.schedule(function()
-            vim.snippet.jump(-1)
-          end)
+        elseif snippy.can_jump(-1) then
+          snippy.previous()
         else
           fallback()
         end
       end, { 'i', 's' }),
     },
     sources = {
-      { name = 'snippets' },
+      { name = 'snippy' },
       { name = 'nvim_lsp' },
       { name = 'buffer' },
       { name = 'async_path' },
@@ -240,6 +359,32 @@ later(function()
   })
 end)
 
+-- diagnostics
+vim.diagnostic.config({
+  virtual_text = false,
+  underline = false,
+  document_highlight = {
+    enabled = true,
+  },
+  capabilities = {
+    workspace = {
+      fileOperations = {
+        didRename = true,
+        willRename = true,
+      },
+    },
+  },
+  float = {
+    border = 'single',
+    header = '',
+  },
+})
+map('n', 'gl', vim.diagnostic.open_float)
+later(function()
+  add('dgagn/diagflow.nvim')
+  require('diagflow').setup({ scope = 'line' })
+end)
+
 -- lsp
 later(function()
   add({
@@ -247,34 +392,28 @@ later(function()
     depends = {
       'hrsh7th/cmp-nvim-lsp',
       'j-hui/fidget.nvim',
-      'luozhiya/lsp-virtual-improved.nvim',
       'lewis6991/hover.nvim',
       'aznhe21/actions-preview.nvim',
+      'MunifTanjim/nui.nvim',
     },
   })
+
   local lspconfig = require('lspconfig')
   local capabilities = require('cmp_nvim_lsp').default_capabilities({
     workspace = {
       didChangeWatchedFiles = { dynamicRegistration = false },
     },
   })
-  vim.diagnostic.config({
-    virtual_text = false,
-    underline = false,
-    float = {
-      border = 'single',
-      header = '',
-    },
-    virtual_improved = {
-      current_line = 'only',
-    },
-    virtual_lines = false,
-  })
+
   vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'single' })
+
   lspconfig.eslint.setup({
     capabilities = capabilities,
   })
   lspconfig.nil_ls.setup({
+    capabilities = capabilities,
+  })
+  lspconfig.jsonls.setup({
     capabilities = capabilities,
   })
   lspconfig.lua_ls.setup({
@@ -319,10 +458,11 @@ later(function()
       },
     },
   })
+
   require('fidget').setup({
     progress = { ignore_empty_message = false },
   })
-  require('lsp-virtual-improved').setup()
+
   require('hover').setup({
     init = function()
       require('hover.providers.lsp')
@@ -411,38 +551,49 @@ later(function()
       lua = { 'stylua' },
       javascript = { 'prettier' },
       typescript = { 'prettier' },
+      yaml = { 'prettier' },
       nix = { 'alejandra' },
       rust = { 'rustfmt' },
       sh = { 'shfmt' },
-      yaml = { 'prettier' },
-      json = { 'jq' },
-      jsonc = { 'jq' },
+      json = { lsp_format = 'prefer' },
+      jsonc = { lsp_format = 'prefer' },
     },
   })
   map('n', '=', function()
     conform.format()
-    vim.cmd.update()
+    vim.defer_fn(vim.cmd.update, 1100)
   end)
 end)
 
 -- git
+if vim.fn.executable('nvr') == 1 then
+  vim.env.GIT_EDITOR = "nvr --remote-tab-wait +'set bufhidden=delete'"
+end
 later(function()
   add({
-    source = 'lewis6991/gitsigns.nvim',
+    source = 'tpope/vim-fugitive',
     depends = {
       'sindrets/diffview.nvim',
-      'tpope/vim-fugitive',
-      'sankhesh/gitv',
+      'lewis6991/gitsigns.nvim',
+      'junegunn/gv.vim',
     },
   })
-  if vim.fn.executable('nvr') == 1 then
-    vim.env.GIT_EDITOR = "nvr --remote-tab-wait +'set bufhidden=delete'"
-  end
+
+  require('diffview').setup({
+    use_icons = false,
+    hooks = {
+      view_opened = function()
+        require('diffview.actions').toggle_files()
+      end,
+    },
+  })
+  map('n', 'ghd', '<cmd>DiffviewOpen<cr>')
+
   local gs = require('gitsigns')
   gs.setup({
     signs = { untracked = { text = '' } },
-    _signs_staged_enable = true,
-    _signs_staged = {
+    signs_staged_enable = true,
+    signs_staged = {
       add = { text = '┋ ' },
       change = { text = '┋ ' },
       delete = { text = '﹍' },
@@ -460,67 +611,12 @@ later(function()
         gs.blame_line({ full = true })
       end)
       map('n', 'ghb', gs.toggle_current_line_blame)
-      map('n', 'ghd', gs.diffthis)
       map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
     end,
   })
   map('n', 'ghg', '<cmd>tab G<cr>')
-  autocmd('FileType', {
-    pattern = { 'fugitive', 'git' },
-    group = vimRc,
-    callback = function(args)
-      map('n', 'ghl', '<cmd>tab G log<cr>', { buffer = args.buf })
-      map('n', 'gha', '<cmd>tab G log --oneline --graph --decorate --all<cr>', { buffer = args.buf })
-      map('n', 'ghs', '<cmd>tab G<cr>', { buffer = args.buf })
-      map('n', 'ghb', '<cmd>tab G branch -va<cr>', { buffer = args.buf })
-      map('n', 'ghd', ':G branch -D ', { buffer = args.buf })
-      map('n', 'ghf', '<cmd>G fetch --all --prune<cr>', { buffer = args.buf })
-    end,
-  })
-  map('n', 'ghl', '<cmd>tab G log<cr>')
-end)
-
--- fzf-lua
-later(function()
-  add('ibhagwan/fzf-lua')
-  local opts = {
-    'telescope',
-    winopts = {
-      width = 0.55,
-      height = 0.7,
-      preview = {
-        layout = 'vertical',
-        vertical = 'up:60%',
-      },
-    },
-  }
-  require('fzf-lua').setup(opts)
-  require('fzf-lua').register_ui_select()
-  map(
-    'n',
-    '<c-p>',
-    '<cmd>lua require("fzf-lua").files({ cmd = "fd -tf -tl -H -E=.git -E=node_modules --strip-cwd-prefix" })<cr>'
-  )
-  map('n', '<bs>', '<cmd>FzfLua buffers<cr>')
-  map('n', '<leader>g', '<cmd>FzfLua live_grep_glob<cr>')
-  map('n', '<leader>w', '<cmd>FzfLua grep_cword<cr>')
-  map('x', '<leader>w', '<cmd>FzfLua grep_visual<cr>')
-  map('n', '<leader>o', '<cmd>FzfLua oldfiles<cr>')
-  map('n', '<leader>h', '<cmd>FzfLua help_tags<cr>')
-  map('n', '<leader>r', '<cmd>FzfLua resume<cr>')
-  map('n', 'z=', function()
-    require('fzf-lua').spell_suggest({
-      winopts = { relative = 'cursor', row = 1.01, col = 0, height = 0.2, width = 0.5 },
-    })
-  end)
-  map('n', 'gd', function()
-    require('fzf-lua').lsp_definitions({ jump_to_single_result = true })
-  end)
-  map('n', 'gD', '<cmd>FzfLua lsp_definitions<cr>')
-  map('n', 'gr', '<cmd>FzfLua lsp_references<cr>')
-  map('n', 'gy', '<cmd>FzfLua lsp_implementations<cr>')
-  map('n', '<f4>', '<cmd>FzfLua lsp_code_actions<cr>')
-  map('n', '<leader>d', '<cmd>FzfLua diagnostics_document<cr>')
+  map('n', 'ghf', '<cmd>G fetch --all --prune<cr>')
+  map('n', 'ghl', '<cmd>GV --all<cr>')
 end)
 
 -- sessions
@@ -534,15 +630,33 @@ later(function()
   end)
 end)
 
--- misc
+-- terminal
 later(function()
+  add('akinsho/toggleterm.nvim')
+  require('toggleterm').setup({ open_mapping = '<c-t>' })
+end)
+
+-- misc
+now(function()
+  add('LunarVim/bigfile.nvim')
+end)
+
+later(function()
+  add({
+    source = 'winston0410/range-highlight.nvim',
+    depends = { 'winston0410/cmd-parser.nvim' },
+  })
+  require('range-highlight').setup({})
+end)
+
+later(function()
+  add('tpope/vim-repeat')
   add('3rd/image.nvim')
   require('image').setup()
   require('mini.bufremove').setup()
   map('n', '<c-w>d', function()
     require('mini.bufremove').delete(0, false)
   end)
-  require('mini.jump').setup()
   add('kylechui/nvim-surround')
   require('nvim-surround').setup()
   add('numToStr/Comment.nvim')
@@ -559,24 +673,7 @@ later(function()
     accept_keys = 'jfkdlsahgnuvrbytmiceoxwpqz',
   })
   map('n', 's', '<cmd>Pounce<cr>')
-  add('smjonas/inc-rename.nvim')
-  require('inc_rename').setup({ save_in_cmdline_history = false })
-  vim.keymap.set('n', '<f2>', function()
-    return ':IncRename ' .. vim.fn.expand('<cword>')
-  end, { expr = true })
-  add('stevearc/dressing.nvim')
-  add('NStefan002/screenkey.nvim')
-  require('screenkey').setup({})
-  add('smjonas/live-command.nvim')
-  require('live-command').setup({
-    commands = {
-      Norm = { cmd = 'norm' },
-    },
-  })
-  add('mg979/vim-visual-multi')
   add('kkoomen/gfi.vim')
-  add('LunarVim/bigfile.nvim')
-  add('nvim-tree/nvim-web-devicons')
   add({
     source = 'nvim-pack/nvim-spectre',
     depends = { 'nvim-lua/plenary.nvim' },
@@ -591,52 +688,4 @@ later(function()
   })
   add('ashfinal/qfview.nvim')
   require('qfview').setup()
-end)
-
--- mappings
-now(function()
-  map('n', ']q', ':cnext<cr>')
-  map('n', '[q', ':cprev<cr>')
-  map('n', '<C-w>z', [[:wincmd z<bar>cclose<bar>lclose<cr>]], { silent = true })
-  map('x', 'il', 'g_o^', { silent = true })
-  map('o', 'il', ':normal vil<cr>', { silent = true })
-  map('n', '[d', vim.diagnostic.goto_prev)
-  map('n', ']d', vim.diagnostic.goto_next)
-  map('n', 'gl', vim.diagnostic.open_float)
-end)
-
--- autocmds
-now(function()
-  autocmd('TextYankPost', {
-    group = vimRc,
-    callback = function()
-      vim.highlight.on_yank()
-    end,
-  })
-  autocmd('FileType', {
-    group = vimRc,
-    pattern = {
-      'help',
-      'man',
-      'qf',
-      'query',
-      'scratch',
-    },
-    callback = function(args)
-      map('n', 'q', '<cmd>quit<cr>', { buffer = args.buf })
-    end,
-  })
-  autocmd('FileType', { pattern = { 'qf', 'help', 'man' }, group = vimRc, command = 'wincmd J' })
-  autocmd('FileType', { group = vimRc, pattern = '*', command = 'set formatoptions-=o' })
-  autocmd('BufRead', { pattern = '*', group = vimRc, command = [[call setpos(".", getpos("'\""))]] })
-  autocmd('BufReadPre', {
-    pattern = '*.json',
-    group = vimRc,
-    command = 'setlocal conceallevel=0 concealcursor= formatoptions=',
-  })
-  autocmd('BufReadPre', {
-    pattern = '*{.md,.markdown}',
-    group = vimRc,
-    command = 'setlocal conceallevel=2 concealcursor=vc',
-  })
 end)
