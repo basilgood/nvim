@@ -1,6 +1,12 @@
 {
     "Lua.diagnostics.globals": [
-        "vim"
+        "vim",
+        "Snacks"
     ],
-    "workspace.checkThirdParty": false
+    "workspace.checkThirdParty": false,
+    "diagnostics.disable": [
+        "missing-fields",
+        "no-unknown",
+        "unused-local"
+    ]
 }
