@@ -1,7 +1,9 @@
 {
     "Lua.diagnostics.globals": [
         "vim",
-        "Snacks"
+        "Snacks",
+        "MiniDeps",
+        "vimRc"
     ],
     "workspace.checkThirdParty": false,
     "diagnostics.disable": [
