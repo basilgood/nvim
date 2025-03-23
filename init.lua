@@ -27,18 +27,28 @@ local autocmd = vim.api.nvim_create_autocmd
 local command = vim.api.nvim_create_user_command
 
 -- colorscheme
-add('navarasu/onedark.nvim')
-require('onedark').setup({
-  highlights = {
-    ['VisualNonText'] = { fg = '#5c6370', bg = '#3b3f4c' },
-    ['FzfLuaBorder'] = { fg = '#333842', bg = '#282c34' },
-    ['BlinkCmpMenuBorder'] = { fg = '#383838' },
-    ['BlinkCmpDocBorder'] = { fg = '#383838' },
-    -- ['GitSignsAdd'] = { fg = '#54695d' },
-    -- ['GitSignsChange'] = { fg = '#4e616f' },
+add('EdenEast/nightfox.nvim')
+require('nightfox').setup({
+  options = {
+    colorblind = {
+      enable = true,
+      severity = {
+        protan = 0.4,
+        deutan = 0.4,
+        tritan = 0.4,
+      },
+    },
+  },
+  groups = {
+    nordfox = {
+      VisualNonText = { fg = '#7a828e', bg = '#3e4a5b' },
+      LineNr = { fg = '#5a5a7d' },
+      CursorLineNr = { fg = '#a5a582' },
+      ['@variable'] = { fg = '#CFD4E5' },
+    },
   },
 })
-vim.cmd.colorscheme('onedark')
+vim.cmd.colorscheme('nordfox')
 
 -- options
 add('basilgood/nvim-sensible')
