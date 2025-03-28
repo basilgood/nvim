@@ -3,7 +3,8 @@
         "vim",
         "Snacks",
         "MiniDeps",
-        "vimRc"
+        "vimRc",
+        "MiniDiff"
     ],
     "workspace.checkThirdParty": false,
     "diagnostics.disable": [
