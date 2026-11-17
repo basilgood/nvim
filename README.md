@@ -1,6 +1,6 @@
 # nvim
 
-A personal Neovim configuration. It is not a plugin: the repository is meant to be cloned as Neovim's config directory and used as-is.
+A personal Neovim configuration, meant to be cloned as Neovim's config directory and used as-is.
 
 The config runs on Neovim's built-in package manager, `vim.pack`. `init.lua` bootstraps [zpack.nvim](https://github.com/zuqini/zpack.nvim), which imports every spec in `lua/plugins/` and installs missing plugins without prompting. Specs use the lazy.nvim-style format (`event`, `cmd`, `keys`, `opts`, `config`). Installed revisions are pinned in `nvim-pack-lock.json`.
 
