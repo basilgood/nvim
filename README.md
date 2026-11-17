@@ -1,157 +1,61 @@
-# Time Track - Markdown Time Tracking for Neovim
+# nvim
 
-A Neovim plugin for time tracking using structured Markdown files with automated report generation.
+A personal Neovim configuration. It is not a plugin: the repository is meant to be cloned as Neovim's config directory and used as-is.
 
-## Features
+The config runs on Neovim's built-in package manager, `vim.pack`. `init.lua` bootstraps [zpack.nvim](https://github.com/zuqini/zpack.nvim), which imports every spec in `lua/plugins/` and installs missing plugins without prompting. Specs use the lazy.nvim-style format (`event`, `cmd`, `keys`, `opts`, `config`). Installed revisions are pinned in `nvim-pack-lock.json`.
 
-- Track time entries in human-readable Markdown format
-- Generate automated reports (daily, weekly, project, category, custom range)
-- Month calendar view with daily totals
-- Project and category-based analysis
-- Reports saved as Markdown files
+## Requirements
 
-## Installation
+- Neovim 0.12 or newer. The config calls `vim.pack` and enables `vim._core.ui2`.
+- `git`, which `vim.pack` uses to fetch plugins.
+- Tools that the config invokes but does not install. Put the ones you need on `PATH`:
+  - Language servers enabled in `lua/plugins/lsp.lua`: `lua_ls`, `vtsls`, `bashls`, `cssls`, `nixd`, `gopls`, `dockerls`, `rust_analyzer`, `yamlls`, `helm_ls`, `filepaths_ls`, `org`, `harper`.
+  - Formatters used by conform in `lua/plugins/format.lua`: `stylua`, `prettier`, `shfmt`, `nixfmt`, `dockerfmt`, `jq`. Go, Rust and YAML are formatted through their language server.
+  - Linters used by nvim-lint in `lua/plugins/lint.lua`: `luacheck`, `shellcheck`, `jq`, `hadolint`.
+  - Other binaries named in plugin configs: `lazygit`, `npm` (markdown-preview build), `tmux` (prompt-reference sink), `hax` and `zaly` (truffle profiles).
 
-### Using [lazy.nvim](https://github.com/folke/lazy.nvim)
+## Install
 
-```lua
-{
-  "your-username/time-track.nvim",
-  config = function()
-    require("time-track").setup({
-      data_dir = "~/time-tracking",
-      reports_dir = "~/time-tracking/reports",
-    })
-  end,
-}
+Clone the repository to Neovim's config directory and start Neovim:
+
+```sh
+git clone https://github.com/basilgood/nvim ~/.config/nvim
+nvim
 ```
 
-### Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
+The first start adds zpack.nvim, then installs every plugin declared under `lua/plugins/`. Confirmation prompts are disabled in `init.lua`. A plugin's build hook runs in the same session that zpack installs or updates it.
 
-```lua
-use {
-  "your-username/time-track.nvim",
-  config = function()
-    require("time-track").setup({
-      data_dir = "~/time-tracking",
-      reports_dir = "~/time-tracking/reports",
-    })
-  end,
-}
+Plugin management is the `:Z` command, named in `init.lua`. Its subcommands include `update`, `restore`, `clean`, `build`, `load`, `delete`, `sync` and `reload`. `:Z restore` returns plugins to the revisions in `nvim-pack-lock.json`.
+
+## Layout
+
+```text
+init.lua              entry point: leader keys, zpack bootstrap, plugin manager options
+lua/plugins/*.lua     plugin specs, one file per area, imported automatically by zpack
+after/queries/ecma/   extra tree-sitter injection queries
+filetype.lua          extra filetype mappings
+nvim-pack-lock.json   locked plugin revisions
+stylua.toml           Lua formatting style for this repository
 ```
 
-## Configuration
+- `init.lua` sets `mapleader` to space and `maplocalleader` to `\`, adds zpack.nvim with `vim.pack.add`, and calls `require('zpack').setup` with `defaults.confirm = false` and `cmd_name = 'Z'`.
+- `lua/plugins/` holds the configuration proper. Each file returns one spec or a list, for example `lsp.lua`, `format.lua`, `lint.lua`, `treesitter.lua`, `editor.lua`, `keymaps.lua`, `theme.lua`, `ui.lua`, `git.lua` and `snacks.lua`. zpack's default import reads this directory, so a new file needs no registration.
+- `after/queries/ecma/injections.scm` extends the ECMAScript queries to highlight HTML inside template strings and CSS inside `style` template strings.
+- `filetype.lua` maps extensions (`conf`, `har`, `njk`) and filenames (`.eslintrc`, `tsconfig.json`, `tsconfig.build.json`, `.luacheckrc`, `.envrc`) to filetypes.
+- `nvim-pack-lock.json` is written by the package manager and records each plugin's `src` and `rev`.
+- `stylua.toml` sets the Lua style used in the repo: two-space indent, 120 columns, single quotes, Unix line endings.
 
-```lua
-require("time-track").setup({
-  -- Directory where time entry files are stored (default: ~/time-tracking)
-  data_dir = "~/time-tracking",
+Supporting files: `.luacheckrc` and `.luarc.json` configure Lua linting and `lua_ls`; `.editorconfig` sets editor defaults; `AGENTS.md` holds instructions for coding agents; `nvim.md` holds notes on planned changes.
 
-  -- Directory where reports are saved (default: ~/time-tracking/reports)
-  reports_dir = "~/time-tracking/reports",
+## Where to change things
 
-  -- Week start day (default: "sunday")
-  week_start = "monday",
-})
-```
-
-## Usage
-
-### Time Entry Format
-
-Create daily files in your `data_dir` with the format `YYYY-MM-DD.md`:
-
-# 2026-03-22
-
-## Website Redesign
-**09:00 - 10:30** (1.5h) - Navigation component
-- category: Development
-- tags: frontend, react
-
-**10:45 - 12:00** (1.25h) - Header styling
-- category: Design
-- tags: css, responsive
-
-## Meeting
-**14:00 - 15:00** (1h) - Sprint planning
-- category: Meeting
-- tags: planning
-
-### Commands
-
-| Command | Arguments | Description |
-|---------|-----------|-------------|
-| `:TimeTrackMonth` | `[YYYY-MM]` | Show month calendar |
-| `:TimeTrackDaily` | `[YYYY-MM-DD]` | Generate daily report |
-| `:TimeTrackWeekly` | `[YYYY-WW]` | Generate weekly report |
-| `:TimeTrackProject` | `<project-name>` | Generate project report |
-| `:TimeTrackCategory` | `<category-name>` | Generate category report |
-| `:TimeTrackRange` | `<start> <end>` | Generate custom range report |
-
-### Examples
-
-```vim
-" Show current month calendar
-:TimeTrackMonth
-
-" Show specific month
-:TimeTrackMonth 2026-03
-
-" Generate daily report for today
-:TimeTrackDaily
-
-" Generate daily report for specific date
-:TimeTrackDaily 2026-03-22
-
-" Generate weekly report
-:TimeTrackWeekly
-
-" Generate project report
-:TimeTrackProject "Website Redesign"
-
-" Generate category report
-:TimeTrackCategory Development
-
-" Generate custom range report
-:TimeTrackRange 2026-03-01 2026-03-31
-```
-
-## Report Output
-
-Reports are saved as Markdown files in your `reports_dir` and automatically opened in Neovim.
-
-Example daily report:
-
-# Daily Report: 2026-03-22
-
-## Summary
-- **Total Hours:** 6.75
-- **Projects:** 2
-- **Categories:** 3
-
-## Entries
-
-| Time | Duration | Project | Category | Description |
-|------|----------|---------|----------|-------------|
-| 09:00–10:30 | 1.50h | Website Redesign | Development | Navigation component |
-| 10:45-h12:00 | 1.25h | Website Redesign | Design | Header styling |
-| 14:00-h15:00 | 1.00h | Meeting | Meeting | Sprint planning |
-
-## By Project
-
-| Project | Hours | % of Total |
-|---------|-------|------------|
-| Website Redesign | 4.75h | 70.4% |
-| Meeting | 1.00h | 14.8% |
-
-## By Category
-
-| Category | Hours | % of Total |
-|----------|-------|------------|
-| Development | 2.50h | 37.0% |
-| Design | 1.25h | 18.5% |
-| Meeting | 1.00h | 14.8% |
-
-## License
-
-MIT
+- Startup, leader keys and plugin-manager options: `init.lua`.
+- A plugin's options or config: the matching file in `lua/plugins/`, such as completion in `blink.lua`, pickers and the explorer in `snacks.lua`, or the colorscheme in `theme.lua`.
+- Neovim defaults and `ui2` message routing: `lua/plugins/sensible.lua`.
+- Enabled language servers and their settings: `lua/plugins/lsp.lua`, through `vim.lsp.config` and `vim.lsp.enable`.
+- Formatting: `lua/plugins/format.lua`. `vim.g.autoformat` at the top switches format-on-save, and `<C-s>` writes the current buffer without formatting.
+- Linting: `lua/plugins/lint.lua`, including `lint.linters_by_ft`.
+- Keymaps: `lua/plugins/keymaps.lua`, plus maps defined next to their plugin. Which-key groups and labels are in `lua/plugins/which-key.lua`.
+- Filetype detection: `filetype.lua`.
+- Tree-sitter injections: `after/queries/`.
+- Plugin versions: `nvim-pack-lock.json`, through `:Z update` and `:Z restore` rather than by hand.
