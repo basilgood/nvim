@@ -10,7 +10,7 @@ The config runs on Neovim's built-in package manager, `vim.pack`. `init.lua` boo
 - `git`, which `vim.pack` uses to fetch plugins.
 - Tools that the config invokes but does not install. Put the ones you need on `PATH`:
   - Language servers enabled in `lua/plugins/lsp.lua`: `lua_ls`, `vtsls`, `bashls`, `cssls`, `nixd`, `gopls`, `dockerls`, `rust_analyzer`, `yamlls`, `helm_ls`, `filepaths_ls`, `org`, `harper`.
-  - Formatters used by conform in `lua/plugins/format.lua`: `stylua`, `prettier`, `shfmt`, `nixfmt`, `dockerfmt`, `jq`. C, Go, Rust and YAML are formatted through their language server.
+  - Formatters used by conform in `lua/plugins/format.lua`: `stylua`, `prettier`, `shfmt`, `nixfmt`, `dockerfmt`, `jq`. Go, Rust and YAML are formatted through their language server.
   - Linters used by nvim-lint in `lua/plugins/lint.lua`: `luacheck`, `shellcheck`, `jq`, `hadolint`.
   - Other binaries named in plugin configs: `lazygit`, `npm` (markdown-preview build), `tmux` (prompt-reference sink), `hax` and `zaly` (truffle profiles).
 
