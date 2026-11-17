@@ -23,7 +23,7 @@ git clone https://github.com/basilgood/nvim ~/.config/nvim
 nvim
 ```
 
-The first start adds zpack.nvim, then installs every plugin declared under `lua/plugins/`. Confirmation prompts are disabled in `init.lua`. Pending plugin build hooks run on the next start.
+The first start adds zpack.nvim, then installs every plugin declared under `lua/plugins/`. Confirmation prompts are disabled in `init.lua`. A plugin's build hook runs in the same session that zpack installs or updates it.
 
 Plugin management is the `:Z` command, named in `init.lua`. Its subcommands include `update`, `restore`, `clean`, `build`, `load`, `delete`, `sync` and `reload`. `:Z restore` returns plugins to the revisions in `nvim-pack-lock.json`.
 
