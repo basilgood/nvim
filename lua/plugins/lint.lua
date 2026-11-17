@@ -6,21 +6,9 @@ return {
 
     local lint = require('lint')
 
-    local overrides = {
-      luacheck = {
-        prepend_args = { '--globals', 'vim' },
-      },
-    }
-    for name, override in pairs(overrides) do
-      local upstream = lint.linters[name]
-      if type(override) ~= 'table' or type(upstream) ~= 'table' then
-        lint.linters[name] = override
-      else
-        local extra_args = type(override.prepend_args) == 'table' and override.prepend_args or {}
-        local args = vim.list_extend(vim.deepcopy(override.args or upstream.args or {}), extra_args)
-        lint.linters[name] = vim.tbl_deep_extend('force', upstream, override, { args = args })
-      end
-    end
+    local upstream = lint.linters.luacheck
+    local args = vim.list_extend(vim.deepcopy(upstream.args or {}), { '--globals', 'vim' })
+    lint.linters.luacheck = vim.tbl_deep_extend('force', upstream, { args = args })
 
     lint.linters_by_ft = {
       lua = { 'luacheck' },
