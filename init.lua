@@ -13,3 +13,5 @@ require('zpack').setup({
   },
   cmd_name = 'Z',
 })
+
+require('config.keymaps')

@@ -34,35 +34,7 @@ return {
     wk.add({
       { '<leader>q', group = 'Quickfix' },
       { '<leader>s', group = 'Surround' },
-      { '<leader>th', group = 'Highlights' },
       { '<leader>g', group = 'Git' },
-      { '<leader>l', group = 'Language & Locations' },
-      { '<M-S-O>', ':bprev<CR>', desc = 'Previous buffer' },
-      { '<M-S-I>', ':bnext<CR>', desc = 'Next buffer' },
-      {
-        '<leader>.',
-        function()
-          local hide = vim.wo.number or vim.wo.signcolumn == 'yes'
-          vim.wo.number = not hide
-          vim.wo.relativenumber = not hide
-          vim.wo.signcolumn = hide and 'no' or 'yes'
-        end,
-        desc = 'Toggle gutter',
-      },
-      {
-        '<leader>,',
-        function()
-          vim.o.mouse = vim.o.mouse == 'a' and '' or 'a'
-        end,
-        desc = 'Toggle mouse',
-      },
-      {
-        '<leader><tab>',
-        function()
-          vim.cmd([[tab split]])
-        end,
-        desc = 'Buffer full-screen',
-      },
     })
   end,
 }

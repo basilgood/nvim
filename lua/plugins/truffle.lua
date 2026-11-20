@@ -17,12 +17,21 @@ return {
         },
       },
     })
-
-    vim.keymap.set('n', '<leader>th', function()
-      require('truffle').switch_profile('hax')
-    end, { desc = 'Truffle: hax profile' })
-    vim.keymap.set('n', '<leader>tz', function()
-      require('truffle').switch_profile('zaly')
-    end, { desc = 'Truffle: zaly profile' })
   end,
+  keys = {
+    {
+      '<leader>th',
+      function()
+        require('truffle').switch_profile('hax')
+      end,
+      desc = 'Truffle: hax profile',
+    },
+    {
+      '<leader>tz',
+      function()
+        require('truffle').switch_profile('zaly')
+      end,
+      desc = 'Truffle: zaly profile',
+    },
+  },
 }
