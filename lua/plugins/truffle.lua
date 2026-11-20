@@ -1,5 +1,6 @@
 return {
   'basilgood/truffle.nvim',
+  lazy = false,
   config = function()
     require('truffle').setup({
       mappings = {

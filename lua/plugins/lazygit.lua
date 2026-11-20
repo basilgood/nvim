@@ -1,5 +1,6 @@
 return {
   'zachbuchli/lazygit.nvim',
+  cmd = 'Lazygit',
   keys = {
     {
       '<leader>gh',

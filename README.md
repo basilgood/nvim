@@ -55,9 +55,9 @@ Supporting files: `.luacheckrc` and `.luarc.json` configure Lua linting and `lua
 - A plugin's options or config: the matching file in `lua/plugins/`, such as completion in `blink.lua`, pickers and the explorer in `fzf.lua`, or the colorscheme in `theme.lua`.
 - Neovim defaults and `ui2` message routing: `lua/plugins/sensible.lua`.
 - Language server settings: `lsp/*.lua`, one file per server. `lua/plugins/lsp.lua` enables them through `vim.lsp.enable`.
-- Formatting: `lua/plugins/format.lua`. `vim.g.autoformat` at the top switches format-on-save, and `<C-s>` writes the current buffer without formatting.
+- Formatting: `lua/plugins/format.lua`. `vim.g.autoformat` at the top switches format-on-save; `<C-s>` in `lua/config/keymaps.lua` writes the current buffer without formatting.
 - Linting: `lua/plugins/lint.lua`, including `lint.linters_by_ft`.
-- Keymaps: `lua/config/keymaps.lua` for global maps, `lua/plugins/keymaps.lua` for `mini.keymap` behaviour, plus maps defined next to their plugin. Which-key groups and labels are in `lua/plugins/which-key.lua`.
+- Keymaps: `lua/config/keymaps.lua` for global maps, `lua/plugins/keymaps.lua` for `mini.keymap` behaviour, plus maps defined next to their plugin. Which-key groups are declared in `lua/plugins/which-key.lua`; labels come from each mapping's `desc`.
 - Filetype detection: `filetype.lua`.
 - Tree-sitter injections: `after/queries/`.
 - Plugin versions: `nvim-pack-lock.json`, through `:Z update` and `:Z restore` rather than by hand.
