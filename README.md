@@ -12,7 +12,7 @@ The config runs on Neovim's built-in package manager, `vim.pack`. `init.lua` boo
   - Language servers enabled in `lua/plugins/lsp.lua`: `lua_ls`, `vtsls`, `bashls`, `cssls`, `nixd`, `gopls`, `dockerls`, `rust_analyzer`, `yamlls`, `helm_ls`, `filepaths_ls`, `org`, `harper`.
   - Formatters used by conform in `lua/plugins/format.lua`: `stylua`, `prettier`, `shfmt`, `nixfmt`, `dockerfmt`, `jq`. Go, Rust and YAML are formatted through their language server.
   - Linters used by nvim-lint in `lua/plugins/lint.lua`: `luacheck`, `shellcheck`, `jq`, `hadolint`.
-  - Other binaries named in plugin configs: `lazygit`, `npm` (markdown-preview build), `tmux` (prompt-reference sink), `hax` and `zaly` (truffle profiles).
+  - Other binaries named in plugin configs: `lazygit`, `tmux` (prompt-reference sink), `hax` and `zaly` (truffle profiles).
 
 ## Install
 
@@ -27,6 +27,10 @@ The first start adds zpack.nvim, then installs every plugin declared under `lua/
 
 Plugin management is the `:Z` command, named in `init.lua`. Its subcommands include `update`, `restore`, `clean`, `build`, `load`, `delete`, `sync` and `reload`. `:Z restore` returns plugins to the revisions in `nvim-pack-lock.json`.
 
+## Development
+
+`make check` verifies the config: `stylua --check`, `luacheck`, and a headless Neovim start against this directory. `make fmt` rewrites the Lua files with `stylua`. Both need `stylua`, `luacheck` and `nvim` on `PATH`.
+
 ## Layout
 
 ```text
@@ -36,6 +40,7 @@ lua/plugins/*.lua     plugin specs, one file per area, imported automatically by
 lsp/*.lua             language server settings, loaded by vim.lsp.enable
 after/queries/ecma/   extra tree-sitter injection queries
 filetype.lua          extra filetype mappings
+Makefile              `check` and `fmt` targets
 nvim-pack-lock.json   locked plugin revisions
 stylua.toml           Lua formatting style for this repository
 ```
