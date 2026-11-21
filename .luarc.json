@@ -1,16 +1,16 @@
 {
-    "Lua.diagnostics.globals": [
-        "vim",
-        "Snacks",
-        "vimRc",
-        "MiniIcons",
-        "MiniNotify",
-        "MiniKeymap"
-    ],
-    "workspace.checkThirdParty": false,
-    "diagnostics.disable": [
-        "missing-fields",
-        "no-unknown",
-        "unused-local"
-    ]
+  "Lua.diagnostics.globals": [
+    "vim",
+    "Snacks",
+    "vimRc",
+    "MiniIcons",
+    "MiniNotify",
+    "MiniKeymap"
+  ],
+  "workspace.checkThirdParty": false,
+  "diagnostics.disable": [
+    "missing-fields",
+    "no-unknown",
+    "unused-local"
+  ]
 }

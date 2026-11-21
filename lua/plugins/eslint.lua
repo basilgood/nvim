@@ -1,4 +1,4 @@
 return {
   'esmuellert/nvim-eslint',
-  opts = {}
+  opts = {},
 }
