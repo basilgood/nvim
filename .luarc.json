@@ -1,16 +1,18 @@
 {
-    "Lua.diagnostics.globals": [
-        "vim",
-        "Snacks",
-        "vimRc",
-        "MiniIcons",
-        "MiniNotify",
-        "MiniKeymap"
-    ],
-    "workspace.checkThirdParty": false,
-    "diagnostics.disable": [
-        "missing-fields",
-        "no-unknown",
-        "unused-local"
-    ]
+  "Lua.diagnostics.globals": [
+    "vim"
+  ],
+  "workspace.checkThirdParty": false,
+  "diagnostics.disable": [
+    "missing-fields",
+    "no-unknown",
+    "unused-local"
+  ],
+  "$comment": [
+    "diagnostics.disable is deliberate, one entry per reason:",
+    "missing-fields - plugin specs are option tables whose fields are filled in by the plugin's setup(), so lua_ls reports every spec it cannot see the full type of.",
+    "no-unknown - the config touches plugin APIs through require() of modules that are not on this repo's runtime path.",
+    "unused-local - locals captured by callbacks and key mappings are used at runtime, not in the file lua_ls analyses.",
+    "Nothing else is suppressed: every other lua_ls diagnostic stays on."
+  ]
 }

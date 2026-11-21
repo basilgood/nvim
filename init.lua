@@ -7,9 +7,5 @@ require('zpack').setup({
   defaults = {
     confirm = false,
   },
-  profiling = {
-    loader = true,
-    require = true,
-  },
   cmd_name = 'Z',
 })

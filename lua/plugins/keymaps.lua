@@ -1,16 +1,19 @@
 return {
   'nvim-mini/mini.keymap',
   config = function()
-    require('mini.keymap').setup()
+    local mini_keymap = require('mini.keymap')
+    mini_keymap.setup()
 
-    local map_multistep = require('mini.keymap').map_multistep
-    local map_combo = require('mini.keymap').map_combo
+    local map_multistep = mini_keymap.map_multistep
+    local map_combo = mini_keymap.map_combo
     local map = vim.keymap.set
 
     map_multistep({ 'i', 's' }, '<Tab>', { 'vimsnippet_next', 'blink_next' })
     map_multistep({ 'i', 's' }, '<S-Tab>', { 'vimsnippet_prev', 'blink_prev' })
     map_multistep('i', '<CR>', { 'blink_accept' })
 
+    -- Movement goes by screen line, not file line: j/k and the arrows step
+    -- through wrapped lines, so one press never skips a long line's tail.
     map('n', 'j', 'gj')
     map('n', 'k', 'gk')
     map('n', '<Down>', 'gj')
@@ -21,8 +24,6 @@ return {
     map_combo('t', 'jk', '<BS><BS><C-\\><C-n>')
     map_combo('t', 'kj', '<BS><BS><C-\\><C-n>')
     map_combo({ 'i', 'c', 'x', 's' }, 'jk', '<BS><BS><Esc>')
-    -- map_combo('x', 'il', 'g_o^', { silent = true, desc = 'Inner line text object' })
-    -- map_combo('o', 'il', ':<C-u>normal! vil<CR>', { silent = true, desc = 'Inner line text object' })
     map_combo('n', 'vv', 'viw', { delay = 1000 })
 
     map_combo('n', '[e', function()

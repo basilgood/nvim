@@ -7,7 +7,6 @@ return {
     pane = { size = 0.30 },
     agent = {
       kind = 'claude',
-      name = nil,
     },
     keymaps = {
       toggle = '<leader>aa',
