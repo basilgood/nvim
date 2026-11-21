@@ -1,20 +1,19 @@
-vim.g.autoformat = true
-
-local map = vim.keymap.set
-
--- Save without formatting
-map('n', '<C-s>', function()
-  vim.g.skip_formatting = true
-  vim.cmd('noautocmd write')
-  vim.notify('Formatting skipped for this save', vim.log.levels.INFO)
-  -- Reset flag after save
-  vim.defer_fn(function()
-    vim.g.skip_formatting = false
-  end, 100)
-end, { desc = 'Save without formatting' })
-
 return {
   'stevearc/conform.nvim',
+  init = function()
+    vim.g.autoformat = true
+
+    -- Save without formatting
+    vim.keymap.set('n', '<C-s>', function()
+      vim.g.skip_formatting = true
+      vim.cmd('noautocmd write')
+      vim.notify('Formatting skipped for this save', vim.log.levels.INFO)
+      -- Reset flag after save
+      vim.defer_fn(function()
+        vim.g.skip_formatting = false
+      end, 100)
+    end, { desc = 'Save without formatting' })
+  end,
   config = function()
     require('conform').setup({
       notify_no_formatters = false,
