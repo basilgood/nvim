@@ -8,8 +8,5 @@ return {
       right_pad = 1,
     },
   },
-  ft = { 'markdown', 'norg', 'rmd', 'org' },
-  config = function(_, opts)
-    require('render-markdown').setup(opts)
-  end,
+  ft = 'markdown',
 }
