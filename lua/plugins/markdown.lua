@@ -2,10 +2,6 @@ return {
   'MeanderingProgrammer/render-markdown.nvim',
   opts = {
     file_types = { 'markdown' },
-    -- heading = {
-    --   sign = false,
-    --   icons = {},
-    -- },
     code = {
       sign = false,
       width = 'block',

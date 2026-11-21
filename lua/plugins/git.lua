@@ -111,36 +111,4 @@ return {
     },
     opts = {},
   },
-  -- {
-  --   'SuperBo/fugit2.nvim',
-  --   build = false,
-  --   opts = {
-  --     width = 100,
-  --   },
-  --   config = function(_, opts)
-  --     require('fugit2').setup(opts)
-
-  --     local GitDiff = require('fugit2.view.git_diff')
-  --     GitDiff._index_add_reset_handler = function(self, _, action)
-  --       return function()
-  --         self:_index_add_reset_discard(action)
-  --       end
-  --     end
-
-  --     require('nui.utils.autocmd').event.BufModifiedSet = 'OptionSet'
-  --   end,
-  --   dependencies = {
-  --     'MunifTanjim/nui.nvim',
-  --     'nvim-tree/nvim-web-devicons',
-  --     'nvim-lua/plenary.nvim',
-  --     {
-  --       'chrisgrieser/nvim-tinygit',
-  --       dependencies = { 'stevearc/dressing.nvim' },
-  --     },
-  --   },
-  --   cmd = { 'Fugit2', 'Fugit2Diff', 'Fugit2Graph', 'Fugit2Rebase' },
-  --   keys = {
-  --     { '<leader>gg', mode = 'n', '<cmd>Fugit2<cr>' },
-  --   },
-  -- },
 }

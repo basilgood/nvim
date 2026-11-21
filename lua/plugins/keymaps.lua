@@ -21,8 +21,6 @@ return {
     map_combo('t', 'jk', '<BS><BS><C-\\><C-n>')
     map_combo('t', 'kj', '<BS><BS><C-\\><C-n>')
     map_combo({ 'i', 'c', 'x', 's' }, 'jk', '<BS><BS><Esc>')
-    -- map_combo('x', 'il', 'g_o^', { silent = true, desc = 'Inner line text object' })
-    -- map_combo('o', 'il', ':<C-u>normal! vil<CR>', { silent = true, desc = 'Inner line text object' })
     map_combo('n', 'vv', 'viw', { delay = 1000 })
 
     map_combo('n', '[e', function()
