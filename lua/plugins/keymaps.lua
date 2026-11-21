@@ -12,6 +12,8 @@ return {
     map_multistep({ 'i', 's' }, '<S-Tab>', { 'vimsnippet_prev', 'blink_prev' })
     map_multistep('i', '<CR>', { 'blink_accept' })
 
+    -- Movement goes by screen line, not file line: j/k and the arrows step
+    -- through wrapped lines, so one press never skips a long line's tail.
     map('n', 'j', 'gj')
     map('n', 'k', 'gk')
     map('n', '<Down>', 'gj')
