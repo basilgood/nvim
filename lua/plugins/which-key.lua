@@ -33,10 +33,8 @@ return {
 
     wk.add({
       { '<leader>q', group = 'Quickfix' },
-      { '<leader>s', group = 'Surround' },
-      { '<leader>th', group = 'Highlights' },
+      { '<leader>s', group = 'Session & Scratch' },
       { '<leader>g', group = 'Git' },
-      { '<leader>l', group = 'Language & Locations' },
       { '<M-S-O>', ':bprev<CR>', desc = 'Previous buffer' },
       { '<M-S-I>', ':bnext<CR>', desc = 'Next buffer' },
       {
