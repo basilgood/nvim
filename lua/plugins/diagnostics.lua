@@ -1,20 +1,22 @@
+-- Diagnostic display options shared by every buffer. Kept here, above the
+-- specs, because this is the file to open when looking for diagnostic settings.
+vim.diagnostic.config({
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = '✗',
+      [vim.diagnostic.severity.WARN] = '▲',
+      [vim.diagnostic.severity.INFO] = '∙',
+      [vim.diagnostic.severity.HINT] = '∴',
+    },
+  },
+  underline = false,
+  virtual_text = false,
+})
+
 return {
   {
     'rachartier/tiny-inline-diagnostic.nvim',
     config = function()
-      vim.diagnostic.config({
-        signs = {
-          text = {
-            [vim.diagnostic.severity.ERROR] = '✗',
-            [vim.diagnostic.severity.WARN] = '▲',
-            [vim.diagnostic.severity.INFO] = '∙',
-            [vim.diagnostic.severity.HINT] = '∴',
-          },
-        },
-        underline = false,
-        virtual_text = false,
-      })
-
       require('tiny-inline-diagnostic').setup({
         options = {
           show_source = {
@@ -45,12 +47,14 @@ return {
         function()
           require('trouble').next({ skip_groups = true, jump = true })
         end,
+        desc = 'Next diagnostic (Trouble)',
       },
       {
         ']t',
         function()
           require('trouble').prev({ skip_groups = true, jump = true })
         end,
+        desc = 'Previous diagnostic (Trouble)',
       },
     },
   },
