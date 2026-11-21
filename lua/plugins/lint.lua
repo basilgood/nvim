@@ -1,13 +1,13 @@
 return {
   'mfussenegger/nvim-lint',
   config = function()
-    local augroup = vim.api.nvim_create_augroup('UserConfig', {})
+    local augroup = vim.api.nvim_create_augroup('nvim_lint', {})
     local autocmd = vim.api.nvim_create_autocmd
 
     local lint = require('lint')
 
     local upstream = lint.linters.luacheck
-    local args = vim.list_extend(vim.deepcopy(upstream.args or {}), { '--globals', 'vim' })
+    local args = vim.list_extend(vim.deepcopy(upstream.args), { '--globals', 'vim' })
     lint.linters.luacheck = vim.tbl_deep_extend('force', upstream, { args = args })
 
     lint.linters_by_ft = {
