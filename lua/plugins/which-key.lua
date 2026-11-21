@@ -35,6 +35,7 @@ return {
       { '<leader>q', group = 'Quickfix' },
       { '<leader>s', group = 'Session & Scratch' },
       { '<leader>g', group = 'Git' },
+      { '<leader>b', group = 'Buffers' },
       { '<M-S-O>', ':bprev<CR>', desc = 'Previous buffer' },
       { '<M-S-I>', ':bnext<CR>', desc = 'Next buffer' },
       {
