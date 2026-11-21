@@ -1,10 +1,11 @@
 return {
   'nvim-mini/mini.keymap',
   config = function()
-    require('mini.keymap').setup()
+    local mini_keymap = require('mini.keymap')
+    mini_keymap.setup()
 
-    local map_multistep = require('mini.keymap').map_multistep
-    local map_combo = require('mini.keymap').map_combo
+    local map_multistep = mini_keymap.map_multistep
+    local map_combo = mini_keymap.map_combo
     local map = vim.keymap.set
 
     map_multistep({ 'i', 's' }, '<Tab>', { 'vimsnippet_next', 'blink_next' })

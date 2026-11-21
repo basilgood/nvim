@@ -11,7 +11,7 @@ return {
         enable = true,
         filter = function(bufnr)
           local ft = vim.bo[bufnr].filetype
-          return ft == 'helm' or ft == 'yaml' or ft:match('yaml')
+          return ft == 'helm' or ft:match('yaml')
         end,
       },
     })
@@ -106,10 +106,10 @@ return {
       },
     })
 
-    vim.lsp.config['harper'] = {
+    vim.lsp.config('harper', {
       cmd = { 'harper-ls', '--stdio' },
       filetypes = { 'markdown', 'text', 'tex', 'typst' },
-    }
+    })
 
     vim.lsp.enable({
       'lua_ls',

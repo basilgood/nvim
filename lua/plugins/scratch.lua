@@ -1,6 +1,5 @@
 return {
   'reybits/scratch.nvim',
-  lazy = true,
   keys = {
     { '<leader>sb', '<cmd>ScratchToggle<cr>', desc = 'Toggle Buffer' },
     { '<leader>si', '<cmd>ScratchIssues<cr>', desc = 'Toggle Issues' },

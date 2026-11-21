@@ -73,7 +73,6 @@ return {
   },
   {
     'NeogitOrg/neogit',
-    lazy = true,
     dependencies = {
       'm00qek/baleia.nvim', -- optional
     },
