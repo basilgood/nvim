@@ -45,7 +45,7 @@ stylua.toml           Lua formatting style for this repository
 - `nvim-pack-lock.json` is written by the package manager and records each plugin's `src` and `rev`.
 - `stylua.toml` sets the Lua style used in the repo: two-space indent, 120 columns, single quotes, Unix line endings.
 
-Supporting files: `.luacheckrc` and `.luarc.json` configure Lua linting and `lua_ls`; `.editorconfig` sets editor defaults; `AGENTS.md` holds instructions for coding agents; `nvim.md` holds notes on planned changes.
+Supporting files: `.luacheckrc` and `.luarc.json` configure Lua linting and `lua_ls`; `.editorconfig` sets editor defaults.
 
 ## Where to change things
 
@@ -53,7 +53,7 @@ Supporting files: `.luacheckrc` and `.luarc.json` configure Lua linting and `lua
 - A plugin's options or config: the matching file in `lua/plugins/`, such as completion in `blink.lua`, pickers and the explorer in `fzf.lua`, or the colorscheme in `theme.lua`.
 - Neovim defaults and `ui2` message routing: `lua/plugins/sensible.lua`.
 - Enabled language servers and their settings: `lua/plugins/lsp.lua`, through `vim.lsp.config` and `vim.lsp.enable`.
-- Formatting: `lua/plugins/format.lua`. `vim.g.autoformat` at the top switches format-on-save, and `<C-s>` writes the current buffer without formatting.
+- Formatting: `lua/plugins/format.lua`. `vim.g.autoformat` in the spec's `init` switches format-on-save, and `<C-s>` writes the current buffer without formatting.
 - Linting: `lua/plugins/lint.lua`, including `lint.linters_by_ft`.
 - Keymaps: `lua/plugins/keymaps.lua`, plus maps defined next to their plugin. Which-key groups and labels are in `lua/plugins/which-key.lua`.
 - Filetype detection: `filetype.lua`.
